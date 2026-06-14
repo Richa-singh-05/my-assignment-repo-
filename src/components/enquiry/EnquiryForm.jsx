@@ -239,14 +239,14 @@ export default function EnquiryForm() {
               {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
             </div>
 
-            <div className="mb-3">
+            <div className="mb-3 ">
               <label className="block text-sm font-medium text-gray-600 mb-1">Date of Birth (18+)</label>
               <input
                 name="dob"
                 type="date"
                 value={form.dob}
                 onChange={handleChange}
-                className={`w-full  min-w-0 bg-white min-w-0 border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 ${errors.dob ? "border-red-400 bg-red-50" : "border-gray-200"}`}
+                className={`w-[90%]  sm:w-full  min-w-0 bg-white  border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 ${errors.dob ? "border-red-400 bg-red-50" : "border-gray-200"}`}
               />
               {errors.dob && <p className="text-red-500 text-xs mt-1">{errors.dob}</p>}
             </div>
