@@ -24,10 +24,7 @@ export default function UserHub() {
     if (filter === "recent") {
       const twoDaysAgo =
         Date.now() - 2 * 24 * 60 * 60 * 1000;
-
-      filtered = filtered.filter(
-        (user) => user.addedAt > twoDaysAgo
-      );
+      filtered = filtered.filter((user) => user.addedAt > twoDaysAgo );
     }
 
     if (search.trim()) {
@@ -38,9 +35,7 @@ export default function UserHub() {
           `${user.name.first} ${user.name.last}`.toLowerCase();
 
         return (
-          fullName.includes(value) ||
-          user.email.toLowerCase().includes(value) ||
-          user.company.toLowerCase().includes(value)
+          fullName.includes(value) || user.email.toLowerCase().includes(value) || user.company.toLowerCase().includes(value)
         );
       });
     }
@@ -54,7 +49,7 @@ export default function UserHub() {
       setError("");
 
       const response = await fetch(
-        "https://randomuser.me/api/?results=12&nat=us"
+        "https://randomuser.me/api/?results=12"
       );
 
       if (!response.ok) {
@@ -80,20 +75,15 @@ export default function UserHub() {
           ...user,
           company:
             companies[
-              Math.floor(
-                Math.random() * companies.length
-              )
+            Math.floor(
+              Math.random() * companies.length
+            )
             ],
           isOnline: Math.random() > 0.5,
           addedAt:
             Date.now() -
             Math.floor(
-              Math.random() *
-                7 *
-                24 *
-                60 *
-                60 *
-                1000
+              Math.random() * 7 * 24 * 60 * 60 * 1000
             ),
         })
       );
@@ -131,40 +121,37 @@ export default function UserHub() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <StatCard title="Total Users" value={totalUsers} />
           <StatCard title="Active Sessions" value={activeUsers} />
-          <StatCard title="Organizations"  value={organizations} />
+          <StatCard title="Organizations" value={organizations} />
           <StatCard title="Countries" value={countries} />
         </div>
         <input type="text" placeholder="Search by name, email or company" value={search}
           onChange={(e) =>
             setSearch(e.target.value)
           }
-          className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 mb-4 outline-none focus:border-blue-500"/>
+          className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 mb-4 outline-none focus:border-blue-500" />
         <div className="flex flex-wrap gap-2 mb-6">
           <button
             onClick={() => setFilter("all")}
-            className={`px-2 sm:px-4 py-2 rounded-lg border ${
-              filter === "all"
+            className={`px-2 sm:px-4 py-2 rounded-lg border ${filter === "all"
                 ? "bg-blue-500 text-white border-blue-500"
                 : "bg-white border-gray-300"
-            }`}
+              }`}
           >
             All Users </button>
           <button
             onClick={() => setFilter("online")}
-            className={`px-2 sm:px-4 py-2  rounded-lg border ${
-              filter === "online"
+            className={`px-2 sm:px-4 py-2  rounded-lg border ${filter === "online"
                 ? "bg-blue-500 text-white border-blue-500"
                 : "bg-white border-gray-300"
-            }`}
+              }`}
           >
             Online Only </button>
           <button
             onClick={() => setFilter("recent")}
-            className={`px-2 sm:px-4 py-2  rounded-lg border ${
-              filter === "recent"
+            className={`px-2 sm:px-4 py-2  rounded-lg border ${filter === "recent"
                 ? "bg-blue-500 text-white border-blue-500"
                 : "bg-white border-gray-300"
-            }`}
+              }`}
           >
             Recently Added  </button>
         </div>
@@ -200,8 +187,10 @@ export default function UserHub() {
                     key={user.login.uuid}
                     user={user}
                   />
+                 
                 ))}
               </div>
+
             )}
           </>
         )}

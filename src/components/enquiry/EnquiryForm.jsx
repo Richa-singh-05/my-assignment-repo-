@@ -20,38 +20,66 @@ export default function EnquiryForm() {
     terms: false,
   });
 
-  useEffect(() => {
-    fetch("https://restcountries.com/v3.1/all?fields=name")
-      .then((res) => res.json())
-      .then((data) => setCountries(data.map((c) => c.name.common).sort()))
-      .catch(() => setCountries(["Australia", "Canada", "India", "United Kingdom", "United States"]));
-  }, []);
+useEffect(() => {
+  fetchCountries();
+}, []);
+
+async function fetchCountries() {
+  try {
+    const response = await fetch(
+      "https://restcountries.com/v3.1/all?fields=name"
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch countries");
+    }
+    const data = await response.json();
+    setCountries(
+      data
+         .map((country) => country.name.common)
+        .sort()
+    );
+  } catch (error) {
+    setCountries([
+      "Australia",
+      "Canada",
+      "India",
+      "United Kingdom",
+      "United States",
+    ]);
+  }
+}
 
   useEffect(() => {
     const isBiz = form.enquiryType === "Business" || form.enquiryType === "Partnership";
     if (!isBiz) {
-      setForm((prev) => ({ ...prev, companyName: "", employees: "" }));
+      setForm((currentForm) => ({ ...currentForm, companyName: "", employees: "" }));
     }
   }, [form.enquiryType]);
 
+  // handlechange functiom : when user type input
+
   function handleChange(e) {
-    const { name, value, type, checked } = e.target;
+
+          const name = e.target.name;
+          const value = e.target.value;
+          const type = e.target.type;
+          const checked = e.target.checked; 
 
     if (name === "phone") {
-      setForm((prev) => ({ ...prev, phone: value.replace(/[^0-9+\s]/g, "") }));
-      setErrors((prev) => ({ ...prev, phone: "" }));
+      setForm((currentForm) => ({ ...currentForm, phone: value.replace(/[^0-9+\s]/g, "") }));
+      setErrors((currentErrors) => ({ ...currentErrors, phone: "" }));
       return;
     }
-
     if (name === "firstName" || name === "lastName" || name === "subject") {
-      setForm((prev) => ({ ...prev, [name]: value.replace(/[^a-zA-Z\s]/g, "") }));
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setForm((currentForm) => ({ ...currentForm, [name]: value.replace(/[^a-zA-Z\s]/g, "") }));
+      setErrors((currentErrors) => ({ ...currentErrors, [name]: "" }));
       return;
     }
+    setForm((currentForm) => ({ ...currentForm, [name]: type === "checkbox" ? checked : value }));
+    setErrors((currentErrors) => ({ ...currentErrors, [name]: "" }));
 
-    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
   }
+
 // Age calculation
   function isOver18(dob) {
     const today = new Date();
@@ -105,7 +133,7 @@ export default function EnquiryForm() {
   }
 
   function handleBack() {
-    setStep((s) => s - 1);
+    setStep((currentStep) => currentStep - 1);
     setErrors({});
   }
 
@@ -147,7 +175,6 @@ export default function EnquiryForm() {
   return (
     <div className="min-h-screen  flex items-center justify-center p-2 sm:p-4">
       <div className="bg-white rounded-xl border border-gray-200 shadow p-4 sm:p-8 w-full max-w-4xl">
-
         <h1 className="text-2xl font-bold text-gray-800 text-center mb-1">Contact Us</h1>
         <p className="text-gray-400 text-sm text-center mb-6">Fill the form and we will get back to you</p>
 
@@ -189,23 +216,13 @@ export default function EnquiryForm() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">First Name</label>
-                <input
-                  name="firstName"
-                  value={form.firstName}
-                  onChange={handleChange}
-                  placeholder="John"
-                  className={`w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 ${errors.firstName ? "border-red-400 bg-red-50" : "border-gray-200"}`}
-                />
+                <input  name="firstName" value={form.firstName} onChange={handleChange} placeholder="Enter Your First Name" className={`w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 ${errors.firstName ? "border-red-400 bg-red-50" : "border-gray-200"}`}/>
                 {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Last Name</label>
-                <input
-                  name="lastName"
-                  value={form.lastName}
-                  onChange={handleChange}
-                  placeholder="Doe"
+                <input name="lastName" value={form.lastName} onChange={handleChange} placeholder="Enter Your Last Name"
                   className={`w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-400 ${errors.lastName ? "border-red-400 bg-red-50" : "border-gray-200"}`}
                 />
                 {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
@@ -214,12 +231,7 @@ export default function EnquiryForm() {
 
             <div className="mb-3">
               <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="john@example.com"
+              <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="Enter Your Email id "
                 className={`w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-400 ${errors.email ? "border-red-400 bg-red-50" : "border-gray-200"}`}
               />
               {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -227,13 +239,7 @@ export default function EnquiryForm() {
 
             <div className="mb-3">
               <label className="block text-sm font-medium text-gray-600 mb-1">Phone</label>
-              <input
-                name="phone"
-                type="tel"
-                value={form.phone}
-                onChange={handleChange}
-                placeholder="+91 98765 43210"
-                maxLength={15}
+              <input name="phone" type="tel" value={form.phone}  onChange={handleChange}  placeholder="Enter Your Phone Number with Country Code" maxLength={15}
                 className={`w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 ${errors.phone ? "border-red-400 bg-red-50" : "border-gray-200"}`}
               />
               {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
@@ -241,27 +247,18 @@ export default function EnquiryForm() {
 
             <div className="mb-3 ">
               <label className="block text-sm font-medium text-gray-600 mb-1">Date of Birth (18+)</label>
-              <input
-                name="dob"
-                type="date"
-                value={form.dob}
-                onChange={handleChange}
-                className={`w-[90%]  sm:w-full  min-w-0 bg-white  border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 ${errors.dob ? "border-red-400 bg-red-50" : "border-gray-200"}`}
-              />
+              <input name="dob"  type="date" value={form.dob} onChange={handleChange}
+                className={`w-[90%]  sm:w-full  min-w-0 bg-white  text-gray-500 border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 ${form.dob ? "text-black" : "text-gray-500"}  ${errors.dob ? "border-red-400 bg-red-50" : "border-gray-200"}`}  />
               {errors.dob && <p className="text-red-500 text-xs mt-1">{errors.dob}</p>}
             </div>
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-600 mb-1">Country</label>
-              <select
-                name="country"
-                value={form.country}
-                onChange={handleChange}
-                className={`w-full bg-white border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 ${errors.country ? "border-red-400 bg-red-50" : "border-gray-200"}`}
-              >
+              <select name="country" value={form.country} onChange={handleChange}
+                className={`w-full bg-white border   rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 ${form.country ? "text-black" : "text-gray-500" }  ${errors.country ? "border-red-400 bg-red-50" : "border-gray-200"}`} >
                 <option value="">— Select country —</option>
-                {countries.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                {countries.map((countryName) => (
+                  <option key={countryName} value={countryName}>{countryName}</option>
                 ))}
               </select>
               {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
@@ -281,13 +278,7 @@ export default function EnquiryForm() {
             <div className="flex flex-wrap gap-4 mb-4">
               {["Personal", "Business", "Partnership", "Other"].map((type) => (
                 <label key={type} className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="enquiryType"
-                    value={type}
-                    checked={form.enquiryType === type}
-                    onChange={handleChange}
-                    className="accent-blue-600"
+                  <input type="radio" name="enquiryType" value={type} checked={form.enquiryType === type} onChange={handleChange} className="accent-blue-600"
                   />
                   {type}
                 </label>
@@ -300,11 +291,7 @@ export default function EnquiryForm() {
 
                 <div className="mb-3">
                   <label className="block text-sm font-medium text-gray-600 mb-1">Company Name</label>
-                  <input
-                    name="companyName"
-                    value={form.companyName}
-                    onChange={handleChange}
-                    placeholder="Acme Corp"
+                  <input name="companyName" value={form.companyName} onChange={handleChange}  placeholder="Ambuza Corp"
                     className={`w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400 ${errors.companyName ? "border-red-400 bg-red-50" : "border-gray-200"}`}
                   />
                   {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>}

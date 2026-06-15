@@ -1,3 +1,4 @@
+
 export default function UserCard({ user }) {
   const fullName = `${user.name.first} ${user.name.last}`;
 
